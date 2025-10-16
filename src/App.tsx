@@ -1,4 +1,4 @@
-import { Button, Col, Flex, notification, Popover, Row, Table } from 'antd';
+import { Button, Col, Flex, Input, notification, Popover, Row, Table } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { useMockup } from './hooks';
@@ -17,17 +17,19 @@ function App() {
 
   
   const [paging, setPaging] = useState<PagingBody>({ pageIndex: 1, pageSize: CONSTANT.pageSize });
+  const [sortFilterBinding, setSortFilterBinding] = useState<SortFilterBody>({ filter: {}, sort: undefined });
   const [sortFilter, setSortFilter] = useState<SortFilterBody>({ filter: {}, sort: undefined });
   const [data, setData] = useState<MockupResponse[]>([]);
   const [viewDetailOpen, setViewDetailOpen] = useState(false);
   const [viewDetail, setViewDetail] = useState<MockupResponse | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [searchOpen, setsearchOpen] = useState(false);
 
   useEffect(() => {
     if(!isStable) return;
 
     const onLoadData = async () => {
-      const resp = await onSimulateCallApi(paging);
+      const resp = await onSimulateCallApi(paging, sortFilter);
       setData(prev => [...prev, ...resp.data]);
       setIsCompleted(resp.isComplteted);
       console.log('load data', resp)
@@ -36,7 +38,7 @@ function App() {
   }, [isStable, paging])
 
   useEffect(() => {
-    if(!isCompleted) return;
+    if(!isCompleted || !data.length) return;
 
     api.success({
       message: 'Successfully',
@@ -117,23 +119,65 @@ function App() {
 
   const throttledScrollHandler = useCallback(appUtils.debounce(handleScroll, CONSTANT.mockupDebouceTime), [isCompleted, loading]);
 
+  const handleSetFiltersChange = (key: string, value: string) => {
+    setSortFilterBinding(prev => ({...prev, filter: {...prev.filter, [key]: value }}))
+  }
+
+  const handleClearSortFilter = () => {
+    if(loading) return;
+
+    setData([]);
+    setSortFilter({ filter: {}, sort: undefined });
+    setSortFilterBinding({ filter: {}, sort: undefined });
+    setPaging({ pageIndex: 1, pageSize: CONSTANT.pageSize });
+    setsearchOpen(false);
+  }
+
+  const handleApplySortFilter = () => {
+    if(loading) return;
+
+    setData([]);
+    setSortFilter({...sortFilterBinding});
+    setPaging({ pageIndex: 1, pageSize: CONSTANT.pageSize });
+    setsearchOpen(false);
+  }
+
   const content = (
     <Flex vertical gap={16}>
       <Flex vertical gap={8}>
-        <span className='label-highlight'>Filter</span>
+        <span className='label-highlight'>Filters</span>
+        <Row gutter={12}>
+          <Col span={12}>
+            <span>Name</span>
+            <Input value={sortFilterBinding.filter['name']} onChange={(e) => handleSetFiltersChange('name', e.target.value)} />
+          </Col>
+          <Col span={12}>
+            <span>Language</span>
+            <Input value={sortFilterBinding.filter['language']} onChange={(e) => handleSetFiltersChange('language', e.target.value)} />
+          </Col>
+        </Row>
       </Flex>
 
       <Flex vertical gap={8}>
         <span className='label-highlight'>Sort</span>
-        <Select
-          defaultValue="lucy"
-          style={{ width: 120 }}
-          onChange={(value) => setSortFilter(prev => ({...prev, sort: value as SortType }))}
-          options={[
-            { value: 'increasing version', label: 'increasing version' },
-            { value: 'descending version', label: 'descending version' },
-          ]}
-        />
+        <Row >
+          <Col span={24}>
+            <span>Version</span>
+            <Select
+              style={{ width: '100%' }}
+              onChange={(value) => setSortFilterBinding(prev => ({...prev, sort: value as SortType }))}
+              options={[
+                { value: 'increasing version', label: 'Increasing version' },
+                { value: 'descending version', label: 'Descending version' },
+              ]}
+            />
+          </Col>
+        </Row>
+      </Flex>
+
+      <Flex gap={8} justify='flex-end'>
+          <Button  onClick={handleClearSortFilter}>Clear</Button>
+          <Button color="primary" variant="solid" onClick={handleApplySortFilter}>Apply</Button>
       </Flex>
     </Flex>
   );
@@ -141,23 +185,28 @@ function App() {
   return (
     <AppProvider>
       <div className='container'>
-        <h1>Hello world</h1>
-        {/* <button onClick={handleClick}>click</button> */}
-        <Popover content={content} trigger="click">
-          <Button>Sort And Filter</Button>
-        </Popover>
-        <Table 
-          bordered
-          dataSource={data} 
-          columns={columns}
-          pagination={false}
-          loading={loading}
-          rowKey="customId"
-          scroll={{
-            y: '70dvh'
-          }}
-          onScroll={throttledScrollHandler}
-        />
+        <Flex justify='center'>
+          <h2>Tran Ty Go - [Front-End Developer] Technical Test</h2>
+        </Flex>
+        <Flex gap={8} vertical align='flex-end'>
+          <div>
+            <Popover placement='bottomRight' content={content} trigger="click" open={searchOpen} onOpenChange={(open) => setsearchOpen(open)}>
+              <Button color="primary" variant="outlined">Sort And Filters</Button>
+            </Popover>
+          </div>
+          <Table 
+            bordered
+            dataSource={data} 
+            columns={columns}
+            pagination={false}
+            loading={loading}
+            rowKey="customId"
+            scroll={{
+              y: '70dvh'
+            }}
+            onScroll={throttledScrollHandler}
+          />
+        </Flex>
       </div>
       <Drawer 
         open={viewDetailOpen} 

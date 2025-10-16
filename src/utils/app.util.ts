@@ -1,4 +1,4 @@
-import type { PagingBody, PagingFormatBody } from "../types"
+import type { PagingBody, PagingFormatBody, SortFilterBody, SortFilterFormatBody } from "../types"
 
 const formatPagingBody = (body: PagingBody): PagingFormatBody => {
     const { pageIndex, pageSize } = body;
@@ -15,6 +15,17 @@ const formatPagingBody = (body: PagingBody): PagingFormatBody => {
         start: resultPageIndex * pageSize,
         end: (resultPageIndex * pageSize) + pageSize,
     }
+}
+
+const formatSortFilterBody = (search?: SortFilterBody): SortFilterFormatBody => {
+  const filters = search ? Object.entries(search.filter).filter(([_, value]) => !!value).reduce((acc, [key, value]) => ({...acc, [key]: value}), {}) : {};
+
+  return {
+    hasFilter: Object.keys(filters).length > 0,
+    hasSort: !!search?.sort,
+    filters,
+    sort: search?.sort
+  }
 }
 
 const generateRandomDate = (startYear: number, endYear: number) => {
@@ -51,5 +62,5 @@ const formatDateClient = (date: Date) => {
 };
 
 export const appUtils = {
-    formatPagingBody, generateRandomDate, debounce, formatDateClient
+    formatPagingBody, generateRandomDate, debounce, formatDateClient, formatSortFilterBody
 }

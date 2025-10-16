@@ -26,5 +26,11 @@ type SortFilterBody = {
     filter: Record<string, any>;
     sort?: SortType
 }
+type SortFilterFormatBody = {
+    hasFilter: boolean;
+    hasSort:boolean;
+    filters: Record<string, any>;
+    sort?: SortType
+}
 
-export type { PagingResponse, PagingBody, PagingFormatBody, SortFilterBody, SortType }
+export type { PagingResponse, PagingBody, PagingFormatBody, SortFilterBody, SortType, SortFilterFormatBody }
