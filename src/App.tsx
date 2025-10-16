@@ -32,7 +32,7 @@ function App() {
       const resp = await onSimulateCallApi(paging, sortFilter);
       setData(prev => [...prev, ...resp.data]);
       setIsCompleted(resp.isComplteted);
-      console.log('load data', resp)
+      // console.log('load data', resp)
     }
     onLoadData();
   }, [isStable, paging])
