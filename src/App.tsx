@@ -51,28 +51,37 @@ function App() {
       title: 'NO',
       key: 'no',
       width: 100,
+      minWidth: 100,
       render: (_, __, index) => `${index + 1}.`
     },
     {
       title: 'Id',
       dataIndex: 'id',
       key: 'id',
+      width: 180,
+      minWidth: 180,
     },
     {
       title: 'Bio',
       dataIndex: 'bio',
       key: 'bio',
+      width: 200,
+      minWidth: 200,
       render: (bio) => <BioTooltip textContent={bio} />
     },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 150,
+      minWidth: 150,
     },
     {
       title: 'Language',
       dataIndex: 'language',
       key: 'language',
+      width: 150,
+      minWidth: 150,
     },
     {
       title: 'Version',
@@ -85,6 +94,8 @@ function App() {
       title: 'Created Date',
       dataIndex: 'createdDate',
       key: 'createdDate',
+      width: 200,
+      minWidth: 200,
       render: (createdDate) => appUtils.formatDateClient(createdDate)
     },
     {
