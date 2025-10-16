@@ -1,0 +1,15 @@
+.action__container{
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    cursor: pointer;
+    border: 1px solid var(--color);
+    border-radius: 4px;
+    color: var(--color);
+    background-color: #fff;
+}
+
+.action__container:hover{
+    border-color: var(--hover-color);
+    color: var(--hover-color);
+}
