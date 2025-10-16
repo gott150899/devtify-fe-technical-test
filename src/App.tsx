@@ -197,7 +197,7 @@ function App() {
     <AppProvider>
       <div className='container'>
         <Flex justify='center'>
-          <h2>Tran Ty Go - [Front-End Developer] Technical Test</h2>
+          <h2 style={{textAlign: 'center'}}>Tran Ty Go - [Front-End Developer] Technical Test</h2>
         </Flex>
         <Flex gap={8} vertical align='flex-end'>
           <div>
